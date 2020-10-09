@@ -764,6 +764,136 @@ public class DeviceSettingExample {
             return (Criteria) this;
         }
 
+        public Criteria andCurrentTemperatureIsNull() {
+            addCriterion("current_temperature is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentTemperatureIsNotNull() {
+            addCriterion("current_temperature is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentTemperatureEqualTo(Integer value) {
+            addCriterion("current_temperature =", value, "currentTemperature");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentTemperatureNotEqualTo(Integer value) {
+            addCriterion("current_temperature <>", value, "currentTemperature");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentTemperatureGreaterThan(Integer value) {
+            addCriterion("current_temperature >", value, "currentTemperature");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentTemperatureGreaterThanOrEqualTo(Integer value) {
+            addCriterion("current_temperature >=", value, "currentTemperature");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentTemperatureLessThan(Integer value) {
+            addCriterion("current_temperature <", value, "currentTemperature");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentTemperatureLessThanOrEqualTo(Integer value) {
+            addCriterion("current_temperature <=", value, "currentTemperature");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentTemperatureIn(List<Integer> values) {
+            addCriterion("current_temperature in", values, "currentTemperature");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentTemperatureNotIn(List<Integer> values) {
+            addCriterion("current_temperature not in", values, "currentTemperature");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentTemperatureBetween(Integer value1, Integer value2) {
+            addCriterion("current_temperature between", value1, value2, "currentTemperature");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentTemperatureNotBetween(Integer value1, Integer value2) {
+            addCriterion("current_temperature not between", value1, value2, "currentTemperature");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentHumidityIsNull() {
+            addCriterion("current_humidity is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentHumidityIsNotNull() {
+            addCriterion("current_humidity is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentHumidityEqualTo(String value) {
+            addCriterion("current_humidity =", value, "currentHumidity");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentHumidityNotEqualTo(String value) {
+            addCriterion("current_humidity <>", value, "currentHumidity");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentHumidityGreaterThan(String value) {
+            addCriterion("current_humidity >", value, "currentHumidity");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentHumidityGreaterThanOrEqualTo(String value) {
+            addCriterion("current_humidity >=", value, "currentHumidity");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentHumidityLessThan(String value) {
+            addCriterion("current_humidity <", value, "currentHumidity");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentHumidityLessThanOrEqualTo(String value) {
+            addCriterion("current_humidity <=", value, "currentHumidity");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentHumidityLike(String value) {
+            addCriterion("current_humidity like", value, "currentHumidity");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentHumidityNotLike(String value) {
+            addCriterion("current_humidity not like", value, "currentHumidity");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentHumidityIn(List<String> values) {
+            addCriterion("current_humidity in", values, "currentHumidity");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentHumidityNotIn(List<String> values) {
+            addCriterion("current_humidity not in", values, "currentHumidity");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentHumidityBetween(String value1, String value2) {
+            addCriterion("current_humidity between", value1, value2, "currentHumidity");
+            return (Criteria) this;
+        }
+
+        public Criteria andCurrentHumidityNotBetween(String value1, String value2) {
+            addCriterion("current_humidity not between", value1, value2, "currentHumidity");
+            return (Criteria) this;
+        }
+
         public Criteria andTemperatureIsNull() {
             addCriterion("temperature is null");
             return (Criteria) this;

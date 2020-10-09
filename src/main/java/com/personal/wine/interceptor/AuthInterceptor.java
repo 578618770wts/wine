@@ -1,5 +1,7 @@
 package com.personal.wine.interceptor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -13,19 +15,27 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     private RedisTemplate redisTemplate;
 
     private String blankList = "passwordLogin";
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 拦截处理代码
-        System.out.println("拦截到了");
+
+
+
         if (request.getRequestURI().contains(blankList)) {
             return true;
         }
         //返回true通过，返回false拦截
         String headerToken = request.getHeader("token");
-        if (redisTemplate.hasKey(headerToken)) {
+        System.out.println("拦截到了 == headerToken ==" + headerToken);
+        if (headerToken != null && redisTemplate.hasKey(headerToken)) {
             return true;
         } else {
+            if (logger.isDebugEnabled()) {
+                logger.debug("token验证失败，返回404，请求token：{}", headerToken);
+            }
+            response.setStatus(404);
             return false;
         }
     }

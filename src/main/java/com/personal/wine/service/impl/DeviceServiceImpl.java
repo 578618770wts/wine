@@ -49,6 +49,16 @@ public class DeviceServiceImpl implements DeviceService {
             response.setErrorCode(ErrorCode.USER_NOT_EXIST);
             return response;
         }
+        DeviceSettingExample example = new DeviceSettingExample();
+        example.createCriteria()
+                .andUserIdEqualTo(req.getUserId())
+                .andDeviceIdEqualTo(req.getDeviceId());
+        List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
+        if (!deviceSettings.isEmpty()){
+            response.setErrorCode(ErrorCode.DEVICE_BIND);
+            return response;
+
+        }
         if (deviceName == null || deviceName.isEmpty()) {
             deviceName = deviceId;
         }
