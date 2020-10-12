@@ -1434,6 +1434,126 @@ public class DeviceSettingExample {
             return (Criteria) this;
         }
 
+        public Criteria andDeicingTimeIsNull() {
+            addCriterion("deicing_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingTimeIsNotNull() {
+            addCriterion("deicing_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingTimeEqualTo(Integer value) {
+            addCriterion("deicing_time =", value, "deicingTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingTimeNotEqualTo(Integer value) {
+            addCriterion("deicing_time <>", value, "deicingTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingTimeGreaterThan(Integer value) {
+            addCriterion("deicing_time >", value, "deicingTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingTimeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("deicing_time >=", value, "deicingTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingTimeLessThan(Integer value) {
+            addCriterion("deicing_time <", value, "deicingTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingTimeLessThanOrEqualTo(Integer value) {
+            addCriterion("deicing_time <=", value, "deicingTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingTimeIn(List<Integer> values) {
+            addCriterion("deicing_time in", values, "deicingTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingTimeNotIn(List<Integer> values) {
+            addCriterion("deicing_time not in", values, "deicingTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingTimeBetween(Integer value1, Integer value2) {
+            addCriterion("deicing_time between", value1, value2, "deicingTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingTimeNotBetween(Integer value1, Integer value2) {
+            addCriterion("deicing_time not between", value1, value2, "deicingTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingDeviceTimeIsNull() {
+            addCriterion("deicing_device_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingDeviceTimeIsNotNull() {
+            addCriterion("deicing_device_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingDeviceTimeEqualTo(Integer value) {
+            addCriterion("deicing_device_time =", value, "deicingDeviceTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingDeviceTimeNotEqualTo(Integer value) {
+            addCriterion("deicing_device_time <>", value, "deicingDeviceTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingDeviceTimeGreaterThan(Integer value) {
+            addCriterion("deicing_device_time >", value, "deicingDeviceTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingDeviceTimeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("deicing_device_time >=", value, "deicingDeviceTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingDeviceTimeLessThan(Integer value) {
+            addCriterion("deicing_device_time <", value, "deicingDeviceTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingDeviceTimeLessThanOrEqualTo(Integer value) {
+            addCriterion("deicing_device_time <=", value, "deicingDeviceTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingDeviceTimeIn(List<Integer> values) {
+            addCriterion("deicing_device_time in", values, "deicingDeviceTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingDeviceTimeNotIn(List<Integer> values) {
+            addCriterion("deicing_device_time not in", values, "deicingDeviceTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingDeviceTimeBetween(Integer value1, Integer value2) {
+            addCriterion("deicing_device_time between", value1, value2, "deicingDeviceTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeicingDeviceTimeNotBetween(Integer value1, Integer value2) {
+            addCriterion("deicing_device_time not between", value1, value2, "deicingDeviceTime");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;

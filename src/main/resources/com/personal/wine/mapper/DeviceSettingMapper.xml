@@ -26,6 +26,8 @@
     <result column="fan_setting" jdbcType="INTEGER" property="fanSetting" />
     <result column="stop_power" jdbcType="INTEGER" property="stopPower" />
     <result column="rebound_power" jdbcType="INTEGER" property="reboundPower" />
+    <result column="deicing_time" jdbcType="INTEGER" property="deicingTime" />
+    <result column="deicing_device_time" jdbcType="INTEGER" property="deicingDeviceTime" />
     <result column="create_time" jdbcType="VARCHAR" property="createTime" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -69,7 +71,7 @@
     id, device_id, user_id, device_name, led_color, led_brightness, led_switch, glass_switch, 
     alert_switch, current_temperature, current_humidity, temperature, low_temperature, 
     high_temperature, low_temperature_alert, high_temperature_alert, lock_delay, fan_setting, 
-    stop_power, rebound_power, create_time
+    stop_power, rebound_power, deicing_time, deicing_device_time, create_time
   </sql>
   <select id="selectByExample" parameterType="com.personal.wine.model.DeviceSettingExample" resultMap="BaseResultMap">
     <!--
@@ -121,14 +123,16 @@
       current_humidity, temperature, low_temperature, 
       high_temperature, low_temperature_alert, high_temperature_alert, 
       lock_delay, fan_setting, stop_power, 
-      rebound_power, create_time)
+      rebound_power, deicing_time, deicing_device_time, 
+      create_time)
     values (#{deviceId,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{deviceName,jdbcType=VARCHAR}, 
       #{ledColor,jdbcType=VARCHAR}, #{ledBrightness,jdbcType=INTEGER}, #{ledSwitch,jdbcType=INTEGER}, 
       #{glassSwitch,jdbcType=INTEGER}, #{alertSwitch,jdbcType=INTEGER}, #{currentTemperature,jdbcType=INTEGER}, 
       #{currentHumidity,jdbcType=VARCHAR}, #{temperature,jdbcType=INTEGER}, #{lowTemperature,jdbcType=INTEGER}, 
       #{highTemperature,jdbcType=INTEGER}, #{lowTemperatureAlert,jdbcType=INTEGER}, #{highTemperatureAlert,jdbcType=INTEGER}, 
       #{lockDelay,jdbcType=INTEGER}, #{fanSetting,jdbcType=INTEGER}, #{stopPower,jdbcType=INTEGER}, 
-      #{reboundPower,jdbcType=INTEGER}, #{createTime,jdbcType=VARCHAR})
+      #{reboundPower,jdbcType=INTEGER}, #{deicingTime,jdbcType=INTEGER}, #{deicingDeviceTime,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.personal.wine.model.DeviceSetting">
     <!--
@@ -197,6 +201,12 @@
       <if test="reboundPower != null">
         rebound_power,
       </if>
+      <if test="deicingTime != null">
+        deicing_time,
+      </if>
+      <if test="deicingDeviceTime != null">
+        deicing_device_time,
+      </if>
       <if test="createTime != null">
         create_time,
       </if>
@@ -258,6 +268,12 @@
       </if>
       <if test="reboundPower != null">
         #{reboundPower,jdbcType=INTEGER},
+      </if>
+      <if test="deicingTime != null">
+        #{deicingTime,jdbcType=INTEGER},
+      </if>
+      <if test="deicingDeviceTime != null">
+        #{deicingDeviceTime,jdbcType=INTEGER},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=VARCHAR},
@@ -338,6 +354,12 @@
       <if test="reboundPower != null">
         rebound_power = #{reboundPower,jdbcType=INTEGER},
       </if>
+      <if test="deicingTime != null">
+        deicing_time = #{deicingTime,jdbcType=INTEGER},
+      </if>
+      <if test="deicingDeviceTime != null">
+        deicing_device_time = #{deicingDeviceTime,jdbcType=INTEGER},
+      </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=VARCHAR},
       </if>
@@ -369,6 +391,8 @@
       fan_setting = #{fanSetting,jdbcType=INTEGER},
       stop_power = #{stopPower,jdbcType=INTEGER},
       rebound_power = #{reboundPower,jdbcType=INTEGER},
+      deicing_time = #{deicingTime,jdbcType=INTEGER},
+      deicing_device_time = #{deicingDeviceTime,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>

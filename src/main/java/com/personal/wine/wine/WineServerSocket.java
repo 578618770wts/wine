@@ -2,9 +2,7 @@ package com.personal.wine.wine;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -15,7 +13,7 @@ import java.util.concurrent.Executors;
 
 @Data
 @Component
-public class WineServerSocket  {
+public class WineServerSocket {
 
     @Value("${socket.port}")
     private Integer port;
@@ -26,6 +24,7 @@ public class WineServerSocket  {
 
     public static void main(String[] args) {
         new WineServerSocket().start(10086);
+
     }
 
     public void start() {
@@ -48,10 +47,11 @@ public class WineServerSocket  {
             while (started) {
                 Socket socket = ss.accept();
                 socket.setKeepAlive(true);
+                System.out.println("上线通知： " + socket.getInetAddress() + ":" + socket.getPort());
                 ClientSocket register = ClientSocket.register(socket);
-                System.out.println("a client connected!");
                 if (register != null) {
-                    executorService.submit(register);
+                    executorService.execute(register);
+                    System.out.println("a client connected!");
                 }
             }
         } catch (IOException e) {

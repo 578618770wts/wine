@@ -1,5 +1,6 @@
 package com.personal.wine.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.personal.wine.base.Response;
 import com.personal.wine.constants.ErrorCode;
 import com.personal.wine.in.BindDeviceIn;
@@ -54,7 +55,7 @@ public class DeviceServiceImpl implements DeviceService {
                 .andUserIdEqualTo(req.getUserId())
                 .andDeviceIdEqualTo(req.getDeviceId());
         List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
-        if (!deviceSettings.isEmpty()){
+        if (!deviceSettings.isEmpty()) {
             response.setErrorCode(ErrorCode.DEVICE_BIND);
             return response;
 
@@ -149,4 +150,5 @@ public class DeviceServiceImpl implements DeviceService {
         deviceSettingMapper.updateByPrimaryKeySelective(req);
         return response;
     }
+
 }

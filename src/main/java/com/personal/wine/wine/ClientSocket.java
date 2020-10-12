@@ -106,6 +106,7 @@ public class ClientSocket implements Runnable {
 
     @Override
     public void run() {
+
         // 每过5秒连接一次客户端
         while (true) {
             try {
@@ -117,6 +118,7 @@ public class ClientSocket implements Runnable {
                 client.setKey(new String(bytes, "utf-8"));
                 WineServerSocket.clientsMap.put(client.getKey(), client);
                 System.out.println("时间为 ==" + System.currentTimeMillis() + " 》》》》》接收到的数据 == : " + client.getKey());
+                client.getOutputStream().write(("ceshi"+client.getKey()).getBytes());
             } catch (IOException e) {
                 client.logout();
             }
