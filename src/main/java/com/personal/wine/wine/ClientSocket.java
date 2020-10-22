@@ -1,6 +1,10 @@
 package com.personal.wine.wine;
 
 
+import com.alibaba.fastjson.JSONObject;
+import com.personal.wine.mapper.DeviceSettingMapper;
+import com.personal.wine.model.DeviceSetting;
+import com.personal.wine.model.DeviceSettingExample;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -8,6 +12,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 
 @Data
 @Slf4j
@@ -22,6 +27,8 @@ public class ClientSocket implements Runnable {
     private static Socket mSocket;
     private static ClientSocket client;
 
+    private static DeviceSettingMapper deviceSettingMapper;
+
     /**
      * 注册socket到map里
      *
@@ -32,6 +39,8 @@ public class ClientSocket implements Runnable {
 
         mSocket = socket;
         client = new ClientSocket();
+
+        deviceSettingMapper = ManageSpringBeans.getBean(DeviceSettingMapper.class);
 
         return client;
 
@@ -118,7 +127,49 @@ public class ClientSocket implements Runnable {
                 client.setKey(new String(bytes, "utf-8"));
                 WineServerSocket.clientsMap.put(client.getKey(), client);
                 System.out.println("时间为 ==" + System.currentTimeMillis() + " 》》》》》接收到的数据 == : " + client.getKey());
-                client.getOutputStream().write(("ceshi"+client.getKey()).getBytes());
+                JSONObject jsonObject = JSONObject.parseObject(client.getKey());
+                Integer type = jsonObject.getInteger("type");
+                String deviceId = jsonObject.getString("deviceId");
+                JSONObject responseJson = new JSONObject();
+                if (1 == type) {
+                    DeviceSettingExample example = new DeviceSettingExample();
+                    example.createCriteria()
+                            .andDeviceIdEqualTo(deviceId);
+                    List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
+                    if (deviceSettings.isEmpty()) {
+                        responseJson.put("code", -1);
+                        responseJson.put("data", "");
+                        responseJson.put("message", "device not exist");
+                    } else {
+                        DeviceSetting deviceSetting = deviceSettings.get(0);
+                        responseJson.put("code", 0);
+                        responseJson.put("data", JSONObject.toJSONString(deviceSetting));
+                        responseJson.put("message", "success");
+                    }
+//                    client.getOutputStream().write(responseJson.toJSONString().getBytes());
+                } else {
+                    DeviceSetting deviceSetting = JSONObject.parseObject(client.getKey(), DeviceSetting.class);
+                    DeviceSettingExample example = new DeviceSettingExample();
+                    example.createCriteria()
+                            .andDeviceIdEqualTo(deviceId);
+                    List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
+                    if (deviceSettings.isEmpty()) {
+                        responseJson.put("code", -1);
+                        responseJson.put("data", "");
+                        responseJson.put("message", "device not exist");
+                    } else {
+                        DeviceSetting deviceSetting1 = deviceSettings.get(0);
+                        deviceSetting.setId(deviceSetting1.getId());
+                        deviceSettingMapper.updateByPrimaryKeySelective(deviceSetting);
+                        responseJson.put("code", 0);
+                        responseJson.put("data", JSONObject.toJSONString(deviceSetting));
+                        responseJson.put("message", "success");
+//                        client.getOutputStream().write((client.getKey() + "update success").getBytes());
+                    }
+
+                }
+                client.getOutputStream().write(responseJson.toJSONString().getBytes());
+
             } catch (IOException e) {
                 client.logout();
             }

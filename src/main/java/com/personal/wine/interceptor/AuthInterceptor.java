@@ -8,6 +8,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 public class AuthInterceptor extends HandlerInterceptorAdapter {
 
@@ -15,6 +16,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     private RedisTemplate redisTemplate;
 
     private String blankList = "passwordLogin";
+    private String blankList1 = "register";
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
@@ -24,6 +26,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 
         if (request.getRequestURI().contains(blankList)) {
+            return true;
+        }
+        if (request.getRequestURI().contains(blankList1)) {
             return true;
         }
         //返回true通过，返回false拦截

@@ -764,6 +764,66 @@ public class DeviceSettingExample {
             return (Criteria) this;
         }
 
+        public Criteria andDoorSwitchIsNull() {
+            addCriterion("door_switch is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDoorSwitchIsNotNull() {
+            addCriterion("door_switch is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDoorSwitchEqualTo(Integer value) {
+            addCriterion("door_switch =", value, "doorSwitch");
+            return (Criteria) this;
+        }
+
+        public Criteria andDoorSwitchNotEqualTo(Integer value) {
+            addCriterion("door_switch <>", value, "doorSwitch");
+            return (Criteria) this;
+        }
+
+        public Criteria andDoorSwitchGreaterThan(Integer value) {
+            addCriterion("door_switch >", value, "doorSwitch");
+            return (Criteria) this;
+        }
+
+        public Criteria andDoorSwitchGreaterThanOrEqualTo(Integer value) {
+            addCriterion("door_switch >=", value, "doorSwitch");
+            return (Criteria) this;
+        }
+
+        public Criteria andDoorSwitchLessThan(Integer value) {
+            addCriterion("door_switch <", value, "doorSwitch");
+            return (Criteria) this;
+        }
+
+        public Criteria andDoorSwitchLessThanOrEqualTo(Integer value) {
+            addCriterion("door_switch <=", value, "doorSwitch");
+            return (Criteria) this;
+        }
+
+        public Criteria andDoorSwitchIn(List<Integer> values) {
+            addCriterion("door_switch in", values, "doorSwitch");
+            return (Criteria) this;
+        }
+
+        public Criteria andDoorSwitchNotIn(List<Integer> values) {
+            addCriterion("door_switch not in", values, "doorSwitch");
+            return (Criteria) this;
+        }
+
+        public Criteria andDoorSwitchBetween(Integer value1, Integer value2) {
+            addCriterion("door_switch between", value1, value2, "doorSwitch");
+            return (Criteria) this;
+        }
+
+        public Criteria andDoorSwitchNotBetween(Integer value1, Integer value2) {
+            addCriterion("door_switch not between", value1, value2, "doorSwitch");
+            return (Criteria) this;
+        }
+
         public Criteria andCurrentTemperatureIsNull() {
             addCriterion("current_temperature is null");
             return (Criteria) this;

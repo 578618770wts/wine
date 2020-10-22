@@ -1,5 +1,7 @@
 package com.personal.wine.wine;
 
+import com.alibaba.fastjson.JSONObject;
+import com.personal.wine.model.DeviceSetting;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,29 @@ public class WineServerSocket {
 
     public static void main(String[] args) {
         new WineServerSocket().start(10086);
+//        DeviceSetting deviceSetting = new DeviceSetting();
+//        deviceSetting.setId(1);
+//        deviceSetting.setDeviceId("1234");
+//        deviceSetting.setAlertSwitch(1);
+//        deviceSetting.setDeviceName("test");
+//        deviceSetting.setCurrentHumidity("80");
+//        deviceSetting.setCurrentTemperature(26);
+//        deviceSetting.setDeicingDeviceTime(1);
+//        deviceSetting.setDeicingTime(1);
+//        deviceSetting.setFanSetting(1);
+//        deviceSetting.setGlassSwitch(1);
+//        deviceSetting.setHighTemperature(38);
+//        deviceSetting.setHighTemperatureAlert(39);
+//        deviceSetting.setLedBrightness(1);
+//        deviceSetting.setLedColor("#055525");
+//        deviceSetting.setLedSwitch(1);
+//        deviceSetting.setLockDelay(1);
+//        deviceSetting.setLowTemperature(10);
+//        deviceSetting.setLowTemperatureAlert(8);
+//        deviceSetting.setReboundPower(10);
+//        deviceSetting.setStopPower(1);
+//        deviceSetting.setTemperature(10);
+//        System.out.println(JSONObject.toJSONString(deviceSetting));
 
     }
 
