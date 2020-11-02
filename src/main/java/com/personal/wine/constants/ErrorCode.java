@@ -12,6 +12,7 @@ public enum ErrorCode {
     USER_EXIST(-4,"用户已存在，请直接登录"),
     PASSWORD_ERROR(-5,"用户名或密码错误"),
     DEVICE_BIND(-6,"该设备已绑定用户"),
+    DEVICE_NOT_EXIST(-7,"设备不存在"),
     ;
 
 

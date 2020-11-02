@@ -1,6 +1,5 @@
 package com.personal.wine.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.personal.wine.base.Response;
 import com.personal.wine.constants.ErrorCode;
 import com.personal.wine.in.BindDeviceIn;
@@ -147,6 +146,18 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public Response uploadDeviceSetting(DeviceSetting req) {
         Response response = new Response(ErrorCode.SUCCESS);
+        String deviceId = req.getDeviceId();
+        DeviceSettingExample example = new DeviceSettingExample();
+        example.createCriteria()
+                .andDeviceIdEqualTo(deviceId);
+        List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
+        if (deviceSettings.isEmpty()){
+            response.setErrorCode(ErrorCode.DEVICE_NOT_EXIST);
+            return response;
+        }
+        //查找出来，再根据数据库的id去更新设备
+        DeviceSetting deviceSetting = deviceSettings.get(0);
+        req.setId(deviceSetting.getId());
         deviceSettingMapper.updateByPrimaryKeySelective(req);
         return response;
     }
