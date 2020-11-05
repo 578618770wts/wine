@@ -39,4 +39,11 @@ public interface DeviceService {
      * @return
      */
     Response uploadDeviceSetting(DeviceSetting req);
+
+
+    /**
+     * 恢复出厂设置
+     * @return
+     */
+    Response<DeviceSetting> resetDevice(String deviceId);
 }

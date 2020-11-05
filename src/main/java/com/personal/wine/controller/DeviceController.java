@@ -4,6 +4,7 @@ import com.personal.wine.base.Response;
 import com.personal.wine.in.BindDeviceIn;
 import com.personal.wine.in.GetDeviceListIn;
 import com.personal.wine.in.GetDeviceSettingIn;
+import com.personal.wine.in.ResetDeviceIn;
 import com.personal.wine.model.DeviceSetting;
 import com.personal.wine.service.DeviceService;
 import com.personal.wine.vo.Device;
@@ -55,11 +56,23 @@ public class DeviceController {
 
     /**
      * 上传配置信息
+     *
      * @param req
      * @return
      */
     @RequestMapping("uploadSettingConfig")
     public Response uploadSettingConfig(@RequestBody DeviceSetting req) {
         return deviceService.uploadDeviceSetting(req);
+    }
+
+    /**
+     * 重置配置信息
+     *
+     * @param req
+     * @return
+     */
+    @RequestMapping("resetDevice")
+    public Response resetDevice(@RequestBody ResetDeviceIn req) {
+        return deviceService.resetDevice(req.getDeviceId());
     }
 }

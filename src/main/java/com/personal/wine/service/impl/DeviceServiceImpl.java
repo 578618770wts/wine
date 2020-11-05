@@ -151,7 +151,7 @@ public class DeviceServiceImpl implements DeviceService {
         example.createCriteria()
                 .andDeviceIdEqualTo(deviceId);
         List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
-        if (deviceSettings.isEmpty()){
+        if (deviceSettings.isEmpty()) {
             response.setErrorCode(ErrorCode.DEVICE_NOT_EXIST);
             return response;
         }
@@ -162,4 +162,32 @@ public class DeviceServiceImpl implements DeviceService {
         return response;
     }
 
+    @Override
+    public Response<DeviceSetting> resetDevice(String deviceId) {
+        Response<DeviceSetting> response = new Response<>(ErrorCode.SUCCESS);
+        DeviceSettingExample example = new DeviceSettingExample();
+        example.createCriteria()
+                .andDeviceIdEqualTo(deviceId);
+        List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
+        if (deviceSettings.isEmpty()) {
+            response.setErrorCode(ErrorCode.DEVICE_NOT_EXIST);
+            return response;
+        }
+        DeviceSetting deviceSetting = deviceSettings.get(0);
+        deviceSetting.setLedBrightness(1);
+        deviceSetting.setLedSwitch(1);
+        deviceSetting.setGlassSwitch(0);
+        deviceSetting.setAlertSwitch(1);
+        deviceSetting.setDoorSwitch(0);
+        deviceSetting.setLowTemperatureAlert(5);
+        deviceSetting.setHighTemperatureAlert(25);
+        deviceSetting.setLockDelay(3);
+        deviceSetting.setStopPower(3);
+        deviceSetting.setReboundPower(3);
+        deviceSetting.setDeicingTime(8);
+        deviceSetting.setDeicingDeviceTime(10);
+        deviceSettingMapper.updateByPrimaryKeySelective(deviceSetting);
+        response.setData(deviceSetting);
+        return response;
+    }
 }
