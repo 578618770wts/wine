@@ -170,7 +170,10 @@ public class ClientSocket implements Runnable {
                 }
                 client.getOutputStream().write(responseJson.toJSONString().getBytes());
 
-            } catch (IOException e) {
+                Thread.sleep(1000 * 5);
+                client.getOutputStream().write("woshiceshi".getBytes());
+
+            } catch (IOException | InterruptedException e) {
                 client.logout();
             }
             if (isSocketClosed()) {

@@ -60,7 +60,7 @@ public class WineServerSocket {
         try {
             ss = new ServerSocket(port == null ? this.port : port);
             started = true;
-            System.out.println("端口已开启,占用10086端口号....");
+            System.out.println("端口已开启,占用4321端口号....");
         } catch (Exception e) {
             System.out.println("端口使用中....");
             System.out.println("请关掉相关程序并重新运行服务器！");
