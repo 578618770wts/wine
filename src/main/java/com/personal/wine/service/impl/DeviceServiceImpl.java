@@ -12,6 +12,8 @@ import com.personal.wine.model.DeviceSettingExample;
 import com.personal.wine.model.SystemUser;
 import com.personal.wine.service.DeviceService;
 import com.personal.wine.vo.Device;
+import com.personal.wine.wine.ClientSocket;
+import com.personal.wine.wine.ServerHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,8 @@ public class DeviceServiceImpl implements DeviceService {
     DeviceSettingMapper deviceSettingMapper;
     @Autowired
     SystemUserMapper userMapper;
+
+    private ServerHandler clientSocket = new ServerHandler();
 
     /**
      * 绑定设备
@@ -159,6 +163,9 @@ public class DeviceServiceImpl implements DeviceService {
         DeviceSetting deviceSetting = deviceSettings.get(0);
         req.setId(deviceSetting.getId());
         deviceSettingMapper.updateByPrimaryKeySelective(req);
+        List<DeviceSetting> deviceSettings1 = deviceSettingMapper.selectByExample(example);
+
+        clientSocket.setNeedSend(deviceSettings1.get(0));
         return response;
     }
 
@@ -181,13 +188,15 @@ public class DeviceServiceImpl implements DeviceService {
         deviceSetting.setDoorSwitch(0);
         deviceSetting.setLowTemperatureAlert(5);
         deviceSetting.setHighTemperatureAlert(25);
-        deviceSetting.setLockDelay(3);
-        deviceSetting.setStopPower(3);
-        deviceSetting.setReboundPower(3);
-        deviceSetting.setDeicingTime(8);
-        deviceSetting.setDeicingDeviceTime(10);
+        deviceSetting.setLockDelay(5);
+        deviceSetting.setStopPower(5);
+        deviceSetting.setReboundPower(5);
+        deviceSetting.setHighTemperature(2);
+        deviceSetting.setDeicingTime(0);
+        deviceSetting.setDeicingDeviceTime(24);
         deviceSettingMapper.updateByPrimaryKeySelective(deviceSetting);
         response.setData(deviceSetting);
+        clientSocket.setNeedSend(deviceSetting);
         return response;
     }
 }

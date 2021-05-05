@@ -4,7 +4,12 @@ package com.personal.wine.wine;
 import com.alibaba.fastjson.JSONObject;
 import com.personal.wine.mapper.DeviceSettingMapper;
 import com.personal.wine.model.DeviceSetting;
-import com.personal.wine.model.DeviceSettingExample;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.ServerSocketChannel;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,7 +17,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.List;
 
 @Data
 @Slf4j
@@ -28,6 +32,8 @@ public class ClientSocket implements Runnable {
     private static ClientSocket client;
 
     private static DeviceSettingMapper deviceSettingMapper;
+    private boolean needSend = false;
+    private ServerSocketChannel serverSocketChannel;
 
     /**
      * 注册socket到map里
@@ -117,20 +123,26 @@ public class ClientSocket implements Runnable {
     public void run() {
 
         // 每过5秒连接一次客户端
-        while (true) {
+       /* while (true) {
             try {
                 client.setSocket(mSocket);
                 client.setInputStream(new DataInputStream(mSocket.getInputStream()));
                 client.setOutputStream(new DataOutputStream(mSocket.getOutputStream()));
-                byte[] bytes = new byte[1024];
+                byte[] bytes = new byte[2048];
                 client.getInputStream().read(bytes);
                 client.setKey(new String(bytes, "utf-8"));
-                WineServerSocket.clientsMap.put(client.getKey(), client);
                 System.out.println("时间为 ==" + System.currentTimeMillis() + " 》》》》》接收到的数据 == : " + client.getKey());
                 JSONObject jsonObject = JSONObject.parseObject(client.getKey());
                 Integer type = jsonObject.getInteger("type");
                 String deviceId = jsonObject.getString("deviceId");
+                if (deviceId == null)
+                    return;
+                WineServerSocket.clientsMap.put(deviceId, client);
+                key = deviceId;
                 JSONObject responseJson = new JSONObject();
+                if (type == null) {
+                    return;
+                }
                 if (1 == type) {
                     DeviceSettingExample example = new DeviceSettingExample();
                     example.createCriteria()
@@ -143,7 +155,7 @@ public class ClientSocket implements Runnable {
                     } else {
                         DeviceSetting deviceSetting = deviceSettings.get(0);
                         responseJson.put("code", 0);
-                        responseJson.put("data", JSONObject.toJSONString(deviceSetting));
+                        responseJson.put("data", JSONObject.toJSON(deviceSetting));
                         responseJson.put("message", "success");
                     }
 //                    client.getOutputStream().write(responseJson.toJSONString().getBytes());
@@ -162,27 +174,46 @@ public class ClientSocket implements Runnable {
                         deviceSetting.setId(deviceSetting1.getId());
                         deviceSettingMapper.updateByPrimaryKeySelective(deviceSetting);
                         responseJson.put("code", 0);
-                        responseJson.put("data", JSONObject.toJSONString(deviceSetting));
+                        responseJson.put("data", JSONObject.toJSON(deviceSetting));
                         responseJson.put("message", "success");
 //                        client.getOutputStream().write((client.getKey() + "update success").getBytes());
                     }
 
                 }
-                client.getOutputStream().write(responseJson.toJSONString().getBytes());
+                System.out.println("回复的port == " + socket.getPort());
+                client.getOutputStream().write(responseJson.toString().getBytes());
 
-                Thread.sleep(1000 * 5);
-                client.getOutputStream().write("woshiceshi".getBytes());
 
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
                 client.logout();
+            } catch (JSONException e) {
+                try {
+                    System.out.println("json错误 == " + client.getKey());
+                    client.getOutputStream().write(("JSON格式错误 +" + client.getKey()).getBytes());
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
             }
             if (isSocketClosed()) {
                 System.out.println("关闭");
                 logout();
                 break;
             }
-        }
+        }*/
 
+
+    }
+
+
+    public void setNeedSend(DeviceSetting deviceSetting) {
+        try {
+            ClientSocket clientSocket = WineServerSocket.clientsMap.get(deviceSetting.getDeviceId());
+            if (clientSocket != null) {
+                clientSocket.getOutputStream().write(JSONObject.toJSON(deviceSetting).toString().getBytes());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
