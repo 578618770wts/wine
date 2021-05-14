@@ -1614,6 +1614,66 @@ public class DeviceSettingExample {
             return (Criteria) this;
         }
 
+        public Criteria andAlertTypeIsNull() {
+            addCriterion("alert_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlertTypeIsNotNull() {
+            addCriterion("alert_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlertTypeEqualTo(Integer value) {
+            addCriterion("alert_type =", value, "alertType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlertTypeNotEqualTo(Integer value) {
+            addCriterion("alert_type <>", value, "alertType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlertTypeGreaterThan(Integer value) {
+            addCriterion("alert_type >", value, "alertType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlertTypeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("alert_type >=", value, "alertType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlertTypeLessThan(Integer value) {
+            addCriterion("alert_type <", value, "alertType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlertTypeLessThanOrEqualTo(Integer value) {
+            addCriterion("alert_type <=", value, "alertType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlertTypeIn(List<Integer> values) {
+            addCriterion("alert_type in", values, "alertType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlertTypeNotIn(List<Integer> values) {
+            addCriterion("alert_type not in", values, "alertType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlertTypeBetween(Integer value1, Integer value2) {
+            addCriterion("alert_type between", value1, value2, "alertType");
+            return (Criteria) this;
+        }
+
+        public Criteria andAlertTypeNotBetween(Integer value1, Integer value2) {
+            addCriterion("alert_type not between", value1, value2, "alertType");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;

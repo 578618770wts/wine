@@ -6,6 +6,7 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 import java.util.HashMap;
+import java.net.SocketAddress;
 import java.util.Map;
 
 public class NettyConfig {
@@ -15,5 +16,6 @@ public class NettyConfig {
      */
     public static ChannelGroup group = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     public static Map<String, ChannelHandlerContext> channelHandlerContextMap = new HashMap();
+    public static Map<SocketAddress, String> ipDeviceMap = new HashMap();
 
 }
