@@ -75,4 +75,17 @@ public class DeviceController {
     public Response resetDevice(@RequestBody ResetDeviceIn req) {
         return deviceService.resetDevice(req.getDeviceId());
     }
+
+
+    /**
+     * 解绑设备
+     *
+     * @param req
+     * @return
+     */
+    @RequestMapping("unBindDevice")
+    public Response resetDevice(@RequestBody BindDeviceIn req) {
+        return deviceService.unBindDevice(req);
+    }
+
 }

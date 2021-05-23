@@ -1674,6 +1674,66 @@ public class DeviceSettingExample {
             return (Criteria) this;
         }
 
+        public Criteria andDefaultDeviceIsNull() {
+            addCriterion("default_device is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultDeviceIsNotNull() {
+            addCriterion("default_device is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultDeviceEqualTo(Integer value) {
+            addCriterion("default_device =", value, "defaultDevice");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultDeviceNotEqualTo(Integer value) {
+            addCriterion("default_device <>", value, "defaultDevice");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultDeviceGreaterThan(Integer value) {
+            addCriterion("default_device >", value, "defaultDevice");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultDeviceGreaterThanOrEqualTo(Integer value) {
+            addCriterion("default_device >=", value, "defaultDevice");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultDeviceLessThan(Integer value) {
+            addCriterion("default_device <", value, "defaultDevice");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultDeviceLessThanOrEqualTo(Integer value) {
+            addCriterion("default_device <=", value, "defaultDevice");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultDeviceIn(List<Integer> values) {
+            addCriterion("default_device in", values, "defaultDevice");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultDeviceNotIn(List<Integer> values) {
+            addCriterion("default_device not in", values, "defaultDevice");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultDeviceBetween(Integer value1, Integer value2) {
+            addCriterion("default_device between", value1, value2, "defaultDevice");
+            return (Criteria) this;
+        }
+
+        public Criteria andDefaultDeviceNotBetween(Integer value1, Integer value2) {
+            addCriterion("default_device not between", value1, value2, "defaultDevice");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;

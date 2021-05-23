@@ -1,5 +1,6 @@
 package com.personal.wine.wine;
 
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.personal.wine.mapper.DeviceSettingMapper;
 import com.personal.wine.model.DeviceSetting;
@@ -8,6 +9,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
@@ -69,72 +71,100 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         buf.readBytes(req);
         String body = new String(req, "UTF-8");
         System.out.println("本地端口为：==" + channelHandlerContext.name());
+
         System.out.println("接收客户端数据:" + body);
         ByteBuf pingMessage = Unpooled.buffer();
-        JSONObject jsonObject = JSONObject.parseObject(body);
-        if (jsonObject == null) {
-            JSONObject jsonObject1 = new JSONObject();
-            jsonObject1.put("type",5);
-            jsonObject1.put("message","content is null ,please check");
-            pingMessage.writeBytes(jsonObject1.toJSONString().getBytes());
-            channelHandlerContext.writeAndFlush(pingMessage);
-            System.out.println("写出成功 =============="+ jsonObject1.toJSONString());
-            return;
-        }
-        String deviceId = jsonObject.getString("deviceId");
-        Integer type = jsonObject.getInteger("type");
-        JSONObject responseJson = new JSONObject();
-        if (!NettyConfig.channelHandlerContextMap.containsKey(deviceId)) {
-            NettyConfig.channelHandlerContextMap.put(deviceId, channelHandlerContext);
-            NettyConfig.ipDeviceMap.put(channelHandlerContext.channel().remoteAddress(), deviceId);
-        }
-        if (type == null) {
-            JSONObject jsonObject1 = new JSONObject();
-            jsonObject1.put("type",6);
-            jsonObject1.put("message","heart test success");
-            pingMessage.writeBytes(jsonObject1.toJSONString().getBytes());
-            channelHandlerContext.writeAndFlush(pingMessage);
-            System.out.println("写出成功 =============="+ jsonObject1.toJSONString());
-            return;
-        }
-        if (1 == type) {
-            DeviceSettingExample example = new DeviceSettingExample();
-            example.createCriteria()
-                    .andDeviceIdEqualTo(deviceId);
-            List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
-            if (deviceSettings.isEmpty()) {
-                responseJson.put("code", -1);
-                responseJson.put("data", "");
-                responseJson.put("message", "device not exist");
-            } else {
-                DeviceSetting deviceSetting = deviceSettings.get(0);
-                responseJson.put("code", 0);
-                responseJson.put("data", JSONObject.toJSON(deviceSetting));
-                responseJson.put("message", "success");
+        try {
+            JSONObject jsonObject = JSONObject.parseObject(body);
+            if (jsonObject == null) {
+                JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("type", 5);
+                jsonObject1.put("message", "content is null ,please check");
+                pingMessage.writeBytes(jsonObject1.toJSONString().getBytes());
+                channelHandlerContext.writeAndFlush(pingMessage);
+                System.out.println("写出成功 ==============" + jsonObject1.toJSONString());
+                return;
             }
-            pingMessage.writeBytes(responseJson.toJSONString().getBytes());
-            channelHandlerContext.writeAndFlush(pingMessage);
-            System.out.println("写出成功 =============="+ responseJson.toJSONString());
-        } else {
-            DeviceSetting deviceSetting = JSONObject.parseObject(body, DeviceSetting.class);
-            DeviceSettingExample example = new DeviceSettingExample();
-            example.createCriteria()
-                    .andDeviceIdEqualTo(deviceId);
-            List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
-            if (deviceSettings.isEmpty()) {
-                responseJson.put("code", -1);
-                responseJson.put("data", "");
-                responseJson.put("message", "device not exist");
-            } else {
-                DeviceSetting deviceSetting1 = deviceSettings.get(0);
-                deviceSetting.setId(deviceSetting1.getId());
-                deviceSettingMapper.updateByPrimaryKeySelective(deviceSetting);
-                responseJson.put("code", 0);
-                responseJson.put("data", JSONObject.toJSON(deviceSetting));
-                responseJson.put("message", "success");
-//                        client.getOutputStream().write((client.getKey() + "update success").getBytes());
-            }
+            String deviceId = jsonObject.getString("deviceId");
+            Integer type = jsonObject.getInteger("type");
+            JSONObject responseJson = new JSONObject();
+            if (!NettyConfig.channelHandlerContextMap.containsKey(deviceId)) {
+                //加入之前先移除原有的,确保一下
+                NettyConfig.channelHandlerContextMap.remove(deviceId);
+                NettyConfig.ipDeviceMap.remove(channelHandlerContext.channel().remoteAddress());
 
+                NettyConfig.channelHandlerContextMap.put(deviceId, channelHandlerContext);
+                NettyConfig.ipDeviceMap.put(channelHandlerContext.channel().remoteAddress(), deviceId);
+            } else {
+                //先找出原来有的与新来的做对比
+                ChannelHandlerContext mapChannel = NettyConfig.channelHandlerContextMap.get(deviceId);
+                if (!mapChannel.channel().remoteAddress().equals(channelHandlerContext.channel().remoteAddress())) {
+                    NettyConfig.channelHandlerContextMap.remove(deviceId);
+                    NettyConfig.ipDeviceMap.remove(channelHandlerContext.channel().remoteAddress());
+
+                    NettyConfig.channelHandlerContextMap.put(deviceId, channelHandlerContext);
+                    NettyConfig.ipDeviceMap.put(channelHandlerContext.channel().remoteAddress(), deviceId);
+                }
+            }
+            if (type == null) {
+                JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("type", 6);
+                jsonObject1.put("message", "heart test success");
+                pingMessage.writeBytes(jsonObject1.toJSONString().getBytes());
+                channelHandlerContext.writeAndFlush(pingMessage);
+                System.out.println("心跳包ip：================》》》》" + channelHandlerContext.channel().remoteAddress());
+                System.out.println("写出成功 ==============" + jsonObject1.toJSONString());
+                return;
+            }
+            if (1 == type) {
+                DeviceSettingExample example = new DeviceSettingExample();
+                example.createCriteria()
+                        .andDeviceIdEqualTo(deviceId);
+                List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
+                if (deviceSettings.isEmpty()) {
+                    responseJson.put("code", -1);
+                    responseJson.put("data", "");
+                    responseJson.put("message", "device not exist");
+                } else {
+                    DeviceSetting deviceSetting = deviceSettings.get(0);
+                    responseJson.put("code", 0);
+                    responseJson.put("data", JSONObject.toJSON(deviceSetting));
+                    responseJson.put("message", "success");
+                }
+                pingMessage.writeBytes(responseJson.toJSONString().getBytes());
+                channelHandlerContext.writeAndFlush(pingMessage);
+                System.out.println("写出成功 ==============" + responseJson.toJSONString());
+            } else {
+                DeviceSetting deviceSetting = JSONObject.parseObject(body, DeviceSetting.class);
+                DeviceSettingExample example = new DeviceSettingExample();
+                example.createCriteria()
+                        .andDeviceIdEqualTo(deviceId);
+                List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
+                if (deviceSettings.isEmpty()) {
+                    responseJson.put("code", -1);
+                    responseJson.put("data", "");
+                    responseJson.put("message", "device not exist");
+                } else {
+                    DeviceSetting deviceSetting1 = deviceSettings.get(0);
+                    deviceSetting.setId(deviceSetting1.getId());
+                    deviceSettingMapper.updateByPrimaryKeySelective(deviceSetting);
+                    responseJson.put("code", 0);
+                    responseJson.put("data", JSONObject.toJSON(deviceSetting));
+                    responseJson.put("message", "success");
+//                        client.getOutputStream().write((client.getKey() + "update success").getBytes());
+                }
+
+            }
+        } catch (JSONException jsonException) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("type", 7);
+            jsonObject.put("message", "JSON Exception");
+            pingMessage.writeBytes(jsonObject.toJSONString().getBytes());
+            channelHandlerContext.writeAndFlush(pingMessage);
+            System.out.println("写出成功 ==============" + jsonObject.toJSONString());
+        }finally {
+            // 用于释放缓存。避免内存溢出
+            ReferenceCountUtil.release(info);
         }
 
         /*DeviceSettingExample example = new DeviceSettingExample();
@@ -158,17 +188,41 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     public void setNeedSend(DeviceSetting deviceSetting) {
         ChannelHandlerContext clientSocket = NettyConfig.channelHandlerContextMap.get(deviceSetting.getDeviceId());
-        System.out.println("是否有Socket clientSocket == "+ clientSocket);
-        if (clientSocket != null) {
-            ByteBuf pingMessage = Unpooled.buffer();
-            String toJSON = JSONObject.toJSONString(deviceSetting);
-            JSONObject jsonObject = JSONObject.parseObject(toJSON);
-            jsonObject.put("type", 3);
-            pingMessage.writeBytes(jsonObject.toJSONString().getBytes());
-            clientSocket.writeAndFlush(pingMessage);
+        System.out.println("是否有Socket clientSocket == " + clientSocket);
 
-            System.out.println("写出成功 =============="+ jsonObject.toJSONString());
+        if (clientSocket != null && NettyConfig.group.contains(clientSocket.channel())) {
+            if (clientSocket.channel().isActive()) {
+                System.out.println("写出的ip为==============》》》》》》》》》》" + clientSocket.channel().remoteAddress());
+                ByteBuf pingMessage = Unpooled.buffer();
+//                String toJSON = JSONObject.toJSONString(deviceSetting);
+//                JSONObject jsonObject = JSONObject.parseObject(toJSON);
+                JSONObject sourceObject = (JSONObject) JSONObject.toJSON(deviceSetting);
+                JSONObject jsonObject = formatData(sourceObject);
+                jsonObject.put("type", 3);
+                pingMessage.writeBytes(jsonObject.toJSONString().getBytes());
+                clientSocket.writeAndFlush(pingMessage);
+
+                System.out.println("写出成功 ==============" + jsonObject.toJSONString());
+            } else {
+                System.out.println("---------》》》》》》通讯++++++++已死" + clientSocket.channel().remoteAddress());
+                NettyConfig.group.remove(clientSocket.channel());
+                NettyConfig.channelHandlerContextMap.remove(deviceSetting.getDeviceId());
+                NettyConfig.ipDeviceMap.remove(clientSocket.channel().remoteAddress());
+            }
+        } else {
+            NettyConfig.channelHandlerContextMap.remove(deviceSetting.getDeviceId());
         }
 
+    }
+
+    private JSONObject formatData(JSONObject jsonObject) {
+        JSONObject newJson = new JSONObject();
+        for (String k : jsonObject.keySet()) {
+            Object value = jsonObject.get(k);
+            if (value != null) {
+                newJson.put(k, value);
+            }
+        }
+        return newJson;
     }
 }

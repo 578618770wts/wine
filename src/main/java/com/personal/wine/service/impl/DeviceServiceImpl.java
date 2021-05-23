@@ -12,7 +12,6 @@ import com.personal.wine.model.DeviceSettingExample;
 import com.personal.wine.model.SystemUser;
 import com.personal.wine.service.DeviceService;
 import com.personal.wine.vo.Device;
-import com.personal.wine.wine.ClientSocket;
 import com.personal.wine.wine.ServerHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,16 +52,29 @@ public class DeviceServiceImpl implements DeviceService {
             response.setErrorCode(ErrorCode.USER_NOT_EXIST);
             return response;
         }
+        if (req.getDefaultDevice() == 1) {
+            //如果是绑定默认设备，需要看他是否已经有默认设备了
+            DeviceSettingExample example = new DeviceSettingExample();
+            example.createCriteria()
+                    .andUserIdEqualTo(req.getUserId())
+                    .andDefaultDeviceEqualTo(1);
+            List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
+            if (!deviceSettings.isEmpty()) {
+                //说明已经有默认设备了
+                response.setErrorCode(ErrorCode.HAVE_CONTAIN_DEFAULT_DEVICE);
+                return response;
+            }
+        }
         DeviceSettingExample example = new DeviceSettingExample();
         example.createCriteria()
                 .andUserIdEqualTo(req.getUserId())
                 .andDeviceIdEqualTo(req.getDeviceId());
         List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
-        if (!deviceSettings.isEmpty()) {
+      /*  if (!deviceSettings.isEmpty()) {
             response.setErrorCode(ErrorCode.DEVICE_BIND);
             return response;
 
-        }
+        }*/
         if (deviceName == null || deviceName.isEmpty()) {
             deviceName = deviceId;
         }
@@ -73,6 +85,37 @@ public class DeviceServiceImpl implements DeviceService {
         deviceSetting.setDeviceId(deviceId);
         deviceSetting.setDeviceName(deviceName);
         deviceSettingMapper.insertSelective(deviceSetting);
+        return response;
+    }
+
+    @Override
+    public Response unBindDevice(BindDeviceIn req) {
+
+        Response response = new Response(ErrorCode.SUCCESS);
+        int userId = req.getUserId();
+        if (userId <= 0) {
+            response.setErrorCode(ErrorCode.MISSING_PARAMETER);
+            return response;
+        }
+        SystemUser systemUser = userMapper.selectByPrimaryKey(userId);
+        if (systemUser == null) {
+            response.setErrorCode(ErrorCode.USER_NOT_EXIST);
+            return response;
+        }
+
+        DeviceSettingExample example = new DeviceSettingExample();
+        example.createCriteria()
+                .andUserIdEqualTo(req.getUserId())
+        List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
+        if (deviceSettings.isEmpty()) {
+            response.setErrorCode(ErrorCode.DEVICE_NOT_BIND);
+            return response;
+        }
+        for (int i = 0; i < deviceSettings.size(); i++) {
+            DeviceSetting deviceSetting = deviceSettings.get(i);
+            deviceSettingMapper.deleteByPrimaryKey(deviceSetting.getId());
+        }
+
         return response;
     }
 
@@ -165,7 +208,7 @@ public class DeviceServiceImpl implements DeviceService {
         deviceSettingMapper.updateByPrimaryKeySelective(req);
         List<DeviceSetting> deviceSettings1 = deviceSettingMapper.selectByExample(example);
 
-        clientSocket.setNeedSend(deviceSettings1.get(0));
+        clientSocket.setNeedSend(req);
         return response;
     }
 

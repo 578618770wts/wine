@@ -13,12 +13,23 @@ public interface DeviceService {
 
     /**
      * 绑定设备与用户关系
+     *
      * @param req
      */
     Response bindService(BindDeviceIn req);
 
+
+    /**
+     * 解绑设备
+     *
+     * @param req
+     * @return
+     */
+    Response unBindDevice(BindDeviceIn req);
+
     /**
      * 获取绑定设备的一些配置
+     *
      * @param req
      * @return
      */
@@ -27,6 +38,7 @@ public interface DeviceService {
 
     /**
      * 获取设备列表
+     *
      * @param req
      * @return
      */
@@ -35,6 +47,7 @@ public interface DeviceService {
 
     /**
      * 上传配置信息
+     *
      * @param req
      * @return
      */
@@ -43,6 +56,7 @@ public interface DeviceService {
 
     /**
      * 恢复出厂设置
+     *
      * @return
      */
     Response<DeviceSetting> resetDevice(String deviceId);

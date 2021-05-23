@@ -1,11 +1,14 @@
 package com.personal.wine.wine;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -57,7 +60,9 @@ public class WineServerSocket {
     public void start() {
         start(null);
     }
+
     private ServerSocketChannel serverSocketChannel;
+
     public void start(Integer port) {
         new Thread(new Runnable() {
             @Override
@@ -75,21 +80,27 @@ public class WineServerSocket {
                         //有数据立即发送
                         .option(ChannelOption.TCP_NODELAY, true)
                         //保持连接
-                        .childOption(ChannelOption.SO_KEEPALIVE, true)
+//                        .childOption(ChannelOption.SO_KEEPALIVE, true)
                         //处理新连接
                         .childHandler(new ChannelInitializer<SocketChannel>() {
                             @Override
                             protected void initChannel(SocketChannel sc) throws Exception {
+                                // 数据分隔符, 定义的数据分隔符一定是一个ByteBuf类型的数据对象。
+                                ByteBuf delimiter = Unpooled.copiedBuffer("$E$".getBytes());
+                                ChannelHandler[] acceptorHandlers = new ChannelHandler[2];
+                                // 处理固定结束标记符号的Handler。这个Handler没有@Sharable注解修饰，
+                                // 必须每次初始化通道时创建一个新对象
+                                // 使用特殊符号分隔处理数据粘包问题，也要定义每个数据包最大长度。netty建议数据有最大长度。
+                                acceptorHandlers[0] = new DelimiterBasedFrameDecoder(1024, true, delimiter);
+                                // 字符串解码器Handler，会自动处理channelRead方法的msg参数，将ByteBuf类型的数据转换为字符串对象
+//                                acceptorHandlers[1] = new StringDecoder(Charset.forName("UTF-8"));
+                                acceptorHandlers[1] = new ServerHandler();
                                 // 增加任务处理
-                                ChannelPipeline p = sc.pipeline();
-                                p.addLast(
-//                                        //使用了netty自带的编码器和解码器
-//                                        new StringDecoder(),
-//                                        new StringEncoder(),
-                                        //心跳检测，读超时，写超时，读写超时
-                                        //new IdleStateHandler(5, 0, 0, TimeUnit.SECONDS),
-                                        //自定义的处理器
-                                        new ServerHandler());
+                                sc.pipeline()
+                                        .addLast(acceptorHandlers);
+
+//                                        .addLast("decoder", new ByteArrayDecoder())
+//                                        .addLast("encoder", new ByteArrayDecoder());
                             }
                         });
 
