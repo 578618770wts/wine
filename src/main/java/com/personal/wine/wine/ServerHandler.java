@@ -2,6 +2,7 @@ package com.personal.wine.wine;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.personal.wine.constants.MCUType;
 import com.personal.wine.mapper.DeviceSettingMapper;
 import com.personal.wine.model.DeviceSetting;
 import com.personal.wine.model.DeviceSettingExample;
@@ -10,6 +11,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -78,7 +80,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             JSONObject jsonObject = JSONObject.parseObject(body);
             if (jsonObject == null) {
                 JSONObject jsonObject1 = new JSONObject();
-                jsonObject1.put("type", 5);
+                jsonObject1.put("type", MCUType.NULL_CONTENT);
                 jsonObject1.put("message", "content is null ,please check");
                 pingMessage.writeBytes(jsonObject1.toJSONString().getBytes());
                 channelHandlerContext.writeAndFlush(pingMessage);
@@ -108,7 +110,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             }
             if (type == null) {
                 JSONObject jsonObject1 = new JSONObject();
-                jsonObject1.put("type", 6);
+                jsonObject1.put("type", MCUType.HEART_TEST);
                 jsonObject1.put("message", "heart test success");
                 pingMessage.writeBytes(jsonObject1.toJSONString().getBytes());
                 channelHandlerContext.writeAndFlush(pingMessage);
@@ -116,7 +118,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 System.out.println("写出成功 ==============" + jsonObject1.toJSONString());
                 return;
             }
-            if (1 == type) {
+            if (MCUType.GET == type) {
                 DeviceSettingExample example = new DeviceSettingExample();
                 example.createCriteria()
                         .andDeviceIdEqualTo(deviceId);
@@ -134,7 +136,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 pingMessage.writeBytes(responseJson.toJSONString().getBytes());
                 channelHandlerContext.writeAndFlush(pingMessage);
                 System.out.println("写出成功 ==============" + responseJson.toJSONString());
-            } else {
+            } else if (MCUType.UPLOAD == type) {
                 DeviceSetting deviceSetting = JSONObject.parseObject(body, DeviceSetting.class);
                 DeviceSettingExample example = new DeviceSettingExample();
                 example.createCriteria()
@@ -154,15 +156,32 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 //                        client.getOutputStream().write((client.getKey() + "update success").getBytes());
                 }
 
+            } else if (type == MCUType.RESET_ALL_DEVICE) {
+                if (StringUtils.isEmpty(deviceId)) {
+                    System.out.println("设备id为空空空 ============== 》》》》》》》》》》》》》》》》》》》》》》》》》》"
+                    );
+                    return;
+                }
+                //把这个设备与所有人解绑
+                DeviceSettingExample example = new DeviceSettingExample();
+                example.createCriteria()
+                        .andDeviceIdEqualTo(deviceId);
+                List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
+                for (int i = 0; i < deviceSettings.size(); i++) {
+                    DeviceSetting deviceSetting = deviceSettings.get(0);
+                    deviceSettingMapper.deleteByPrimaryKey(deviceSetting.getId());
+                    System.out.println("删除成功 ============== 》》》》》》》》》》》》》》》》》》》》》》》》》》"
+                            + deviceSetting.toString());
+                }
             }
         } catch (JSONException jsonException) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("type", 7);
+            jsonObject.put("type", MCUType.JSON_EXCEPTION);
             jsonObject.put("message", "JSON Exception");
             pingMessage.writeBytes(jsonObject.toJSONString().getBytes());
             channelHandlerContext.writeAndFlush(pingMessage);
             System.out.println("写出成功 ==============" + jsonObject.toJSONString());
-        }finally {
+        } finally {
             // 用于释放缓存。避免内存溢出
             ReferenceCountUtil.release(info);
         }
@@ -198,7 +217,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 //                JSONObject jsonObject = JSONObject.parseObject(toJSON);
                 JSONObject sourceObject = (JSONObject) JSONObject.toJSON(deviceSetting);
                 JSONObject jsonObject = formatData(sourceObject);
-                jsonObject.put("type", 3);
+                jsonObject.put("type", MCUType.SEND_TO_DEVICE);
                 pingMessage.writeBytes(jsonObject.toJSONString().getBytes());
                 clientSocket.writeAndFlush(pingMessage);
 

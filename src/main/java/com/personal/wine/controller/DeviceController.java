@@ -84,8 +84,20 @@ public class DeviceController {
      * @return
      */
     @RequestMapping("unBindDevice")
-    public Response resetDevice(@RequestBody BindDeviceIn req) {
+    public Response unBindDevice(@RequestBody BindDeviceIn req) {
         return deviceService.unBindDevice(req);
+    }
+
+
+    /**
+     * 设置默认设备
+     *
+     * @param req
+     * @return
+     */
+    @RequestMapping("setDefaultDevice")
+    public Response setDefaultDevice(@RequestBody BindDeviceIn req) {
+        return deviceService.setDefaultDevice(req.getUserId(), req.getDeviceId());
     }
 
 }

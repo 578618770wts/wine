@@ -60,4 +60,15 @@ public interface DeviceService {
      * @return
      */
     Response<DeviceSetting> resetDevice(String deviceId);
+
+
+    /**
+     * 设置默认的设备
+     *
+     * @param deviceId
+     * @return
+     */
+    Response<DeviceSetting> setDefaultDevice(int userId, String deviceId);
+
+
 }

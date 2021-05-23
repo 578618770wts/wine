@@ -16,6 +16,7 @@ import com.personal.wine.wine.ServerHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,21 +61,12 @@ public class DeviceServiceImpl implements DeviceService {
                     .andDefaultDeviceEqualTo(1);
             List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
             if (!deviceSettings.isEmpty()) {
-                //说明已经有默认设备了
-                response.setErrorCode(ErrorCode.HAVE_CONTAIN_DEFAULT_DEVICE);
-                return response;
+                //说明已经有默认设备了 ,把当前的默认设备设为非默认 0
+                deviceSettings.get(0).setDefaultDevice(0);
+                deviceSettingMapper.updateByPrimaryKeySelective(deviceSettings.get(0));
             }
         }
-        DeviceSettingExample example = new DeviceSettingExample();
-        example.createCriteria()
-                .andUserIdEqualTo(req.getUserId())
-                .andDeviceIdEqualTo(req.getDeviceId());
-        List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
-      /*  if (!deviceSettings.isEmpty()) {
-            response.setErrorCode(ErrorCode.DEVICE_BIND);
-            return response;
 
-        }*/
         if (deviceName == null || deviceName.isEmpty()) {
             deviceName = deviceId;
         }
@@ -84,6 +76,7 @@ public class DeviceServiceImpl implements DeviceService {
         deviceSetting.setUserId(userId);
         deviceSetting.setDeviceId(deviceId);
         deviceSetting.setDeviceName(deviceName);
+        deviceSetting.setDefaultDevice(req.getDefaultDevice());
         deviceSettingMapper.insertSelective(deviceSetting);
         return response;
     }
@@ -105,7 +98,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         DeviceSettingExample example = new DeviceSettingExample();
         example.createCriteria()
-                .andUserIdEqualTo(req.getUserId())
+                .andUserIdEqualTo(req.getUserId());
         List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
         if (deviceSettings.isEmpty()) {
             response.setErrorCode(ErrorCode.DEVICE_NOT_BIND);
@@ -240,6 +233,39 @@ public class DeviceServiceImpl implements DeviceService {
         deviceSettingMapper.updateByPrimaryKeySelective(deviceSetting);
         response.setData(deviceSetting);
         clientSocket.setNeedSend(deviceSetting);
+        return response;
+    }
+
+    @Override
+    public Response<DeviceSetting> setDefaultDevice(int userId, String deviceId) {
+
+        if (StringUtils.isEmpty(deviceId)) {
+            return new Response<>(ErrorCode.MISSING_PARAMETER);
+        }
+
+        Response response = new Response(ErrorCode.SUCCESS);
+        //先查出这个人的默认设备
+        DeviceSettingExample example = new DeviceSettingExample();
+        example.createCriteria()
+                .andUserIdEqualTo(userId)
+                .andDefaultDeviceEqualTo(1);
+        List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
+        if (!deviceSettings.isEmpty()) {
+            deviceSettings.get(0).setDefaultDevice(0);
+            deviceSettingMapper.updateByPrimaryKeySelective(deviceSettings.get(0));
+        }
+        DeviceSettingExample deviceSettingExample = new DeviceSettingExample();
+        deviceSettingExample.createCriteria()
+                .andUserIdEqualTo(userId)
+                .andDeviceIdEqualTo(deviceId);
+        List<DeviceSetting> deviceSettings1 = deviceSettingMapper.selectByExample(deviceSettingExample);
+        if (deviceSettings1.isEmpty()) {
+            response.setErrorCode(ErrorCode.DEVICE_BIND_ERROR);
+            return response;
+        }
+        deviceSettings1.get(0).setDefaultDevice(1);
+        deviceSettingMapper.updateByPrimaryKeySelective(deviceSettings1.get(0));
+        response.setData(deviceSettings1.get(0));
         return response;
     }
 }
