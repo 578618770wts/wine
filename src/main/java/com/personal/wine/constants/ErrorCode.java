@@ -15,6 +15,7 @@ public enum ErrorCode {
     DEVICE_NOT_EXIST(-7, "设备不存在"),
     DEVICE_NOT_BIND(-8, "该用户还未绑定设备"),
     HAVE_CONTAIN_DEFAULT_DEVICE(-9, "该用户已有默认设备"),
+    VERIFY_CODE_ERROR(-10, "验证码错误"),
     ;
 
 

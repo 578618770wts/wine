@@ -8,7 +8,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 public class AuthInterceptor extends HandlerInterceptorAdapter {
 
@@ -17,12 +16,13 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
     private String blankList = "passwordLogin";
     private String blankList1 = "register";
+    private String blankList2 = "sendSMS";
+    private String blankList3 = "loginSMS";
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 拦截处理代码
-
 
 
         if (request.getRequestURI().contains(blankList)) {
@@ -31,6 +31,13 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         if (request.getRequestURI().contains(blankList1)) {
             return true;
         }
+        if (request.getRequestURI().contains(blankList2)) {
+            return true;
+        }
+        if (request.getRequestURI().contains(blankList3)) {
+            return true;
+        }
+
         //返回true通过，返回false拦截
         String headerToken = request.getHeader("token");
         System.out.println("拦截到了 == headerToken ==" + headerToken);
