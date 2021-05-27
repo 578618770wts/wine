@@ -7,9 +7,8 @@ import com.personal.wine.in.GetDeviceListIn;
 import com.personal.wine.in.GetDeviceSettingIn;
 import com.personal.wine.mapper.DeviceSettingMapper;
 import com.personal.wine.mapper.SystemUserMapper;
-import com.personal.wine.model.DeviceSetting;
-import com.personal.wine.model.DeviceSettingExample;
-import com.personal.wine.model.SystemUser;
+import com.personal.wine.mapper.WarningMapper;
+import com.personal.wine.model.*;
 import com.personal.wine.service.DeviceService;
 import com.personal.wine.vo.Device;
 import com.personal.wine.wine.ServerHandler;
@@ -29,6 +28,8 @@ public class DeviceServiceImpl implements DeviceService {
     DeviceSettingMapper deviceSettingMapper;
     @Autowired
     SystemUserMapper userMapper;
+    @Autowired
+    WarningMapper warningMapper;
 
     private ServerHandler clientSocket = new ServerHandler();
 
@@ -266,6 +267,41 @@ public class DeviceServiceImpl implements DeviceService {
         deviceSettings1.get(0).setDefaultDevice(1);
         deviceSettingMapper.updateByPrimaryKeySelective(deviceSettings1.get(0));
         response.setData(deviceSettings1.get(0));
+        return response;
+    }
+
+    @Override
+    public Response<List<Warning>> getWarningList(String deviceId) {
+        Response<List<Warning>> response = new Response<>(ErrorCode.SUCCESS);
+        WarningExample warningExample = new WarningExample();
+        warningExample.createCriteria()
+                .andStatusEqualTo(1)  //是否需要报警 1 ，是要报警
+                .andDeviceIdEqualTo(deviceId);
+        List<Warning> warnings = warningMapper.selectByExample(warningExample);
+        //查出是否需要报警的警报
+        response.setData(warnings);
+        return response;
+    }
+
+    @Override
+    public Response<List<Warning>> readCurrentWarning(String deviceId, int warningType) {
+        Response<List<Warning>> response = new Response(ErrorCode.SUCCESS);
+        WarningExample warningExample = new WarningExample();
+        warningExample.createCriteria()
+                .andDeviceIdEqualTo(deviceId)
+                .andStatusEqualTo(1)
+                .andWarningTypeEqualTo(warningType);
+        List<Warning> warnings = warningMapper.selectByExample(warningExample);
+        if (!warnings.isEmpty()) {
+            warnings.get(0).setStatus(0);
+            warningMapper.updateByPrimaryKeySelective(warnings.get(0));
+        }
+        warningExample.clear();
+        warningExample.createCriteria()
+                .andDeviceIdEqualTo(deviceId)
+                .andStatusEqualTo(1);
+        List<Warning> newWarningList = warningMapper.selectByExample(warningExample);
+        response.setData(newWarningList);
         return response;
     }
 }

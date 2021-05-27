@@ -82,8 +82,8 @@
 
 <!--        </table>-->
 
-        <table tableName="w_setting" enableDeleteByExample="false" enableUpdateByExample="false"
-               domainObjectName="DeviceSetting">
+        <table tableName="w_warning" enableDeleteByExample="false" enableUpdateByExample="false"
+               domainObjectName="Warning">
             <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post"/>
 
         </table>

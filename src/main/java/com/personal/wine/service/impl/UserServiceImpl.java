@@ -156,11 +156,16 @@ public class UserServiceImpl implements UserService {
                 .andPhoneEqualTo(phone);
         List<SystemUser> systemUsers = userMapper.selectByExample(systemUserExample);
         if (systemUsers.isEmpty()) {
-            response.setErrorCode(ErrorCode.USER_NOT_EXIST);
-            return response;
+            SystemUser systemUser = new SystemUser();
+            systemUser.setCreateTime(System.currentTimeMillis() + "");
+            systemUser.setUpdateTime(System.currentTimeMillis() + "");
+            systemUser.setUserName(smsLoginIn.getPhone());
+            systemUser.setPhone(smsLoginIn.getPhone());
+            userMapper.insertSelective(systemUser);
         }
+        List<SystemUser> systemUsers1 = userMapper.selectByExample(systemUserExample);
+        BeanUtils.copyProperties(systemUsers1.get(0), dto);
         redisTemplate.opsForValue().set(phone, "");
-        BeanUtils.copyProperties(systemUsers.get(0), dto);
         //生成token
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         redisTemplate.opsForValue().set(uuid, smsLoginIn.getPhone(), 7, TimeUnit.DAYS);

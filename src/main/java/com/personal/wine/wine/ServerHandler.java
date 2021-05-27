@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.personal.wine.constants.MCUType;
 import com.personal.wine.mapper.DeviceSettingMapper;
+import com.personal.wine.mapper.WarningMapper;
 import com.personal.wine.model.DeviceSetting;
 import com.personal.wine.model.DeviceSettingExample;
+import com.personal.wine.model.Warning;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,6 +20,7 @@ import java.util.List;
 public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     private static DeviceSettingMapper deviceSettingMapper;
+    private static WarningMapper warningMapper;
 
 
     /**
@@ -29,6 +32,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         NettyConfig.group.add(ctx.channel());
 
         deviceSettingMapper = ManageSpringBeans.getBean(DeviceSettingMapper.class);
+        warningMapper = ManageSpringBeans.getBean(WarningMapper.class);
     }
 
     /**
@@ -173,6 +177,20 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     System.out.println("删除成功 ============== 》》》》》》》》》》》》》》》》》》》》》》》》》》"
                             + deviceSetting.toString());
                 }
+            } else if (type == MCUType.WARNING_UPLOAD) {
+                //上报报警类型
+                if (StringUtils.isEmpty(deviceId)) {
+                    System.out.println("设备id为空空空 ============== 》》》》》》》》》》》》》》》》》》》》》》》》》》"
+                    );
+                    return;
+                }
+                int warningType = (int) jsonObject.get("warningType");
+                Warning warning = new Warning();
+                warning.setDeviceId(deviceId);
+                warning.setWarningType(warningType);
+                warning.setStatus(1);
+                warning.setUpdateTime(System.currentTimeMillis() + "");
+                warningMapper.insert(warning);
             }
         } catch (JSONException jsonException) {
             JSONObject jsonObject = new JSONObject();

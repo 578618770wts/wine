@@ -8,6 +8,7 @@ public interface MCUType {
      * 6 心跳
      * 7 json格式错误
      * 8 设备端解绑所有设备
+     * 9 更新报警类型
      */
 
     int UPLOAD = 0;
@@ -17,5 +18,6 @@ public interface MCUType {
     int HEART_TEST = 6;
     int JSON_EXCEPTION = 7;
     int RESET_ALL_DEVICE = 8;
+    int WARNING_UPLOAD = 9;
 
 }

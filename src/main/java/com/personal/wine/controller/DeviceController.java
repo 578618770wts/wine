@@ -1,10 +1,7 @@
 package com.personal.wine.controller;
 
 import com.personal.wine.base.Response;
-import com.personal.wine.in.BindDeviceIn;
-import com.personal.wine.in.GetDeviceListIn;
-import com.personal.wine.in.GetDeviceSettingIn;
-import com.personal.wine.in.ResetDeviceIn;
+import com.personal.wine.in.*;
 import com.personal.wine.model.DeviceSetting;
 import com.personal.wine.service.DeviceService;
 import com.personal.wine.vo.Device;
@@ -98,6 +95,28 @@ public class DeviceController {
     @RequestMapping("setDefaultDevice")
     public Response setDefaultDevice(@RequestBody BindDeviceIn req) {
         return deviceService.setDefaultDevice(req.getUserId(), req.getDeviceId());
+    }
+
+    /**
+     * 获取警报列表
+     *
+     * @param req
+     * @return
+     */
+    @RequestMapping("getWarningList")
+    public Response getWarningList(@RequestBody WarningIn req) {
+        return deviceService.getWarningList(req.getDeviceId());
+    }
+
+
+    /**
+     * 将此报警标志位已读
+     *
+     * @return
+     */
+    @RequestMapping("readCurrentWarning")
+    public Response readCurrentWarning(@RequestBody WarningIn req) {
+        return deviceService.readCurrentWarning(req.getDeviceId(), req.getWarningType());
     }
 
 }
