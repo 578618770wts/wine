@@ -8,4 +8,5 @@ public class Device {
     private String deviceId;
     private int userId;
     private String deviceName;
+    private int defaultDevice;
 }
