@@ -2,12 +2,15 @@ package com.personal.wine.wine;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.dysmsapi20170525.Client;
+import com.aliyun.dysmsapi20170525.models.SendSmsRequest;
+import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
+import com.aliyun.teaopenapi.models.Config;
 import com.personal.wine.constants.MCUType;
 import com.personal.wine.mapper.DeviceSettingMapper;
+import com.personal.wine.mapper.SystemUserMapper;
 import com.personal.wine.mapper.WarningMapper;
-import com.personal.wine.model.DeviceSetting;
-import com.personal.wine.model.DeviceSettingExample;
-import com.personal.wine.model.Warning;
+import com.personal.wine.model.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,6 +24,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     private static DeviceSettingMapper deviceSettingMapper;
     private static WarningMapper warningMapper;
+    private static SystemUserMapper userMapper;
 
 
     /**
@@ -33,6 +37,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
         deviceSettingMapper = ManageSpringBeans.getBean(DeviceSettingMapper.class);
         warningMapper = ManageSpringBeans.getBean(WarningMapper.class);
+        userMapper = ManageSpringBeans.getBean(SystemUserMapper.class);
     }
 
     /**
@@ -191,6 +196,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 warning.setStatus(1);
                 warning.setUpdateTime(System.currentTimeMillis() + "");
                 warningMapper.insert(warning);
+                sendSMSWarning(deviceId, warningType);
             }
         } catch (JSONException jsonException) {
             JSONObject jsonObject = new JSONObject();
@@ -221,6 +227,69 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 //            //打印出所有客户端的远程地址
 //            System.out.println((iterator.next()).remoteAddress());
 //        }
+    }
+
+    /**
+     * 发送报警短信
+     * 报警类型：1.温度上限 2.温度下限，3.开门警报 4.展台警报
+     *
+     * @param deviceId
+     */
+    private void sendSMSWarning(String deviceId, int alertType) {
+        DeviceSettingExample deviceSettingExample = new DeviceSettingExample();
+        deviceSettingExample.createCriteria()
+                .andDeviceIdEqualTo(deviceId);
+        List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(deviceSettingExample);
+        if (!deviceSettings.isEmpty()) {
+            Integer userId = deviceSettings.get(0).getUserId();
+            SystemUserExample example = new SystemUserExample();
+            example.createCriteria()
+                    .andIdEqualTo(userId);
+            List<SystemUser> systemUsers = userMapper.selectByExample(example);
+
+
+            Config config = new Config()
+                    // 您的AccessKey ID
+                    .setAccessKeyId("LTAI5tBAzpj8MzHR4QMAGjys")
+                    // 您的AccessKey Secret
+                    .setAccessKeySecret("IPf2an7xfe8QzUXE3L2985zRnlTqov");
+            JSONObject jsonObject = new JSONObject();
+            String verifyCode = ((int) ((Math.random() * 9 + 1) * 100000)) + "";
+            jsonObject.put("name", deviceId);
+            jsonObject.put("code", "2021/06/11");
+            Client client = null;
+            try {
+                client = new Client(config);
+                // 访问的域名
+                config.endpoint = "dysmsapi.aliyuncs.com";
+                SendSmsRequest sendSmsRequest = new SendSmsRequest();
+                sendSmsRequest.setPhoneNumbers(systemUsers.get(0).getPhone());
+                sendSmsRequest.setSignName("高恒美");
+
+                switch (alertType){
+                    case 1:
+                        sendSmsRequest.setTemplateCode("SMS_216844841");
+                        break;
+                    case 2:
+                        sendSmsRequest.setTemplateCode("SMS_216844933");
+                        break;
+                    case 3:
+                        sendSmsRequest.setTemplateCode("SMS_217435315");
+                        break;
+                    case 4:
+                        sendSmsRequest.setTemplateCode("SMS_216844841");
+                        break;
+                }
+                sendSmsRequest.setTemplateParam(jsonObject.toString());
+                // 复制代码运行请自行打印 API 的返回值
+                SendSmsResponse sendSmsResponse = client.sendSms(sendSmsRequest);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
     }
 
     public void setNeedSend(DeviceSetting deviceSetting) {

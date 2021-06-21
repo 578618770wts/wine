@@ -584,6 +584,66 @@ public class DeviceSettingExample {
             return (Criteria) this;
         }
 
+        public Criteria andRgbBrightnessIsNull() {
+            addCriterion("rgb_brightness is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRgbBrightnessIsNotNull() {
+            addCriterion("rgb_brightness is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRgbBrightnessEqualTo(Integer value) {
+            addCriterion("rgb_brightness =", value, "rgbBrightness");
+            return (Criteria) this;
+        }
+
+        public Criteria andRgbBrightnessNotEqualTo(Integer value) {
+            addCriterion("rgb_brightness <>", value, "rgbBrightness");
+            return (Criteria) this;
+        }
+
+        public Criteria andRgbBrightnessGreaterThan(Integer value) {
+            addCriterion("rgb_brightness >", value, "rgbBrightness");
+            return (Criteria) this;
+        }
+
+        public Criteria andRgbBrightnessGreaterThanOrEqualTo(Integer value) {
+            addCriterion("rgb_brightness >=", value, "rgbBrightness");
+            return (Criteria) this;
+        }
+
+        public Criteria andRgbBrightnessLessThan(Integer value) {
+            addCriterion("rgb_brightness <", value, "rgbBrightness");
+            return (Criteria) this;
+        }
+
+        public Criteria andRgbBrightnessLessThanOrEqualTo(Integer value) {
+            addCriterion("rgb_brightness <=", value, "rgbBrightness");
+            return (Criteria) this;
+        }
+
+        public Criteria andRgbBrightnessIn(List<Integer> values) {
+            addCriterion("rgb_brightness in", values, "rgbBrightness");
+            return (Criteria) this;
+        }
+
+        public Criteria andRgbBrightnessNotIn(List<Integer> values) {
+            addCriterion("rgb_brightness not in", values, "rgbBrightness");
+            return (Criteria) this;
+        }
+
+        public Criteria andRgbBrightnessBetween(Integer value1, Integer value2) {
+            addCriterion("rgb_brightness between", value1, value2, "rgbBrightness");
+            return (Criteria) this;
+        }
+
+        public Criteria andRgbBrightnessNotBetween(Integer value1, Integer value2) {
+            addCriterion("rgb_brightness not between", value1, value2, "rgbBrightness");
+            return (Criteria) this;
+        }
+
         public Criteria andLedSwitchIsNull() {
             addCriterion("led_switch is null");
             return (Criteria) this;

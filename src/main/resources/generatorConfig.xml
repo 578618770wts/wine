@@ -20,9 +20,9 @@
 
         <!--数据库连接的信息：驱动类、连接地址、用户名、密码 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://8.129.16.57:3306/wine?useUnicode=true&amp;characterEncoding=utf-8&amp;serverTimezone=CTT"
-                        userId="root"
-                        password="123456">
+                        connectionURL="jdbc:mysql://121.196.61.112:3306/vision_new?useUnicode=true&amp;characterEncoding=utf-8&amp;serverTimezone=CTT"
+                        userId="wczn_eyeprotect"
+                        password="WCZN_eyeprotect_292625">
         </jdbcConnection>
 
         <!-- 默认false，把JDBC DECIMAL 和 NUMERIC 类型解析为 Integer，为 true时把JDBC DECIMAL 和
@@ -82,8 +82,8 @@
 
 <!--        </table>-->
 
-        <table tableName="w_warning" enableDeleteByExample="false" enableUpdateByExample="false"
-               domainObjectName="Warning">
+        <table tableName="w_setting" enableDeleteByExample="false" enableUpdateByExample="false"
+               domainObjectName="DeviceSetting">
             <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post"/>
 
         </table>
