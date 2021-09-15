@@ -225,6 +225,10 @@ public class DeviceServiceImpl implements DeviceService {
         deviceSetting.setDoorSwitch(0);
         deviceSetting.setLowTemperatureAlert(5);
         deviceSetting.setHighTemperatureAlert(25);
+        deviceSetting.setTemperature(12);
+        deviceSetting.setFanSetting(10);
+        deviceSetting.setCurrentTemperature(25);
+        deviceSetting.setCurrentHumidity("60");
         deviceSetting.setLockDelay(5);
         deviceSetting.setStopPower(5);
         deviceSetting.setReboundPower(5);

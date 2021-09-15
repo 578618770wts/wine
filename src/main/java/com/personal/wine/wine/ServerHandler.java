@@ -26,6 +26,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static WarningMapper warningMapper;
     private static SystemUserMapper userMapper;
 
+    private static DeviceSetting mDeviceSetting;
+
 
     /**
      * 客户端与服务端创建连接的时候调用
@@ -117,7 +119,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     NettyConfig.ipDeviceMap.put(channelHandlerContext.channel().remoteAddress(), deviceId);
                 }
             }
-            if (type == null) {
+            if (type == null || MCUType.HEART_TEST == type) {
                 JSONObject jsonObject1 = new JSONObject();
                 jsonObject1.put("type", MCUType.HEART_TEST);
                 jsonObject1.put("message", "heart test success");
@@ -197,6 +199,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 warning.setUpdateTime(System.currentTimeMillis() + "");
                 warningMapper.insert(warning);
                 sendSMSWarning(deviceId, warningType);
+            } else if (MCUType.OPERATION_DEVICE_SUCCESS == type) {
+                deviceSettingMapper.updateByPrimaryKeySelective(mDeviceSetting);
             }
         } catch (JSONException jsonException) {
             JSONObject jsonObject = new JSONObject();
@@ -210,23 +214,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             ReferenceCountUtil.release(info);
         }
 
-        /*DeviceSettingExample example = new DeviceSettingExample();
-        example.createCriteria()
-                .andDeviceIdEqualTo(deviceId);
-        List<DeviceSetting> deviceSettings = deviceSettingMapper.selectByExample(example);
-        DeviceSetting deviceSetting = deviceSettings.get(0);
-        String toJSONString = JSONObject.toJSONString(deviceSetting);
-        pingMessage.writeBytes(toJSONString.getBytes());
-        channelHandlerContext.writeAndFlush(pingMessage);*/
-
-
-        //服务端使用这个就能向 每个连接上来的客户端群发消息
-        //NettyConfig.group.writeAndFlush(info);
-//        Iterator<Channel> iterator = NettyConfig.group.iterator();
-//        while(iterator.hasNext()){
-//            //打印出所有客户端的远程地址
-//            System.out.println((iterator.next()).remoteAddress());
-//        }
     }
 
     /**
@@ -266,7 +253,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 sendSmsRequest.setPhoneNumbers(systemUsers.get(0).getPhone());
                 sendSmsRequest.setSignName("高恒美");
 
-                switch (alertType){
+                switch (alertType) {
                     case 1:
                         sendSmsRequest.setTemplateCode("SMS_216844841");
                         break;
@@ -293,6 +280,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void setNeedSend(DeviceSetting deviceSetting) {
+        mDeviceSetting = deviceSetting;
         ChannelHandlerContext clientSocket = NettyConfig.channelHandlerContextMap.get(deviceSetting.getDeviceId());
         System.out.println("是否有Socket clientSocket == " + clientSocket);
 

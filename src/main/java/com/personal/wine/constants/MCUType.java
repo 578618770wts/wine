@@ -9,6 +9,7 @@ public interface MCUType {
      * 7 json格式错误
      * 8 设备端解绑所有设备
      * 9 更新报警类型
+     * 10 操作设备成功
      */
 
     int UPLOAD = 0;
@@ -19,5 +20,6 @@ public interface MCUType {
     int JSON_EXCEPTION = 7;
     int RESET_ALL_DEVICE = 8;
     int WARNING_UPLOAD = 9;
+    int OPERATION_DEVICE_SUCCESS = 10;
 
 }
